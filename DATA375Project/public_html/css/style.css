@@ -1,0 +1,120 @@
+/*
+Name: Cole Stokes
+This file stylizes the elements within the HTML file.
+*/
+
+#disp2{
+    left: 0%;
+    top: 0%;
+    width: 80%;
+    height: 90%;
+    position: fixed;
+    background-color: rgb(45, 222, 222);
+    overflow: auto;
+    text-align: center;
+}
+
+#disp{
+    left: 0%;
+    top: 0%;
+    width: 80%;
+    height: 90%;
+    position: fixed;
+    background-color: rgb(45, 222, 222);
+    overflow: auto;
+    text-align: center;
+}
+
+#file{
+    left: 0%;
+    top: 90%;
+    width: 80%;
+    height: 10%;
+    position: fixed;
+    background-color: rgb(24, 24, 240);
+    text-align: center;
+    border-top: 3px solid;
+}
+
+#file_sel{
+    left: 0%;
+    top: 92%;
+    height: 5%;
+    position: fixed;
+}
+
+#CDF_pos{
+    left: 23%;
+    top: 94%;
+    height: 5%;
+    position: fixed;
+}
+
+#SDF_pos{
+    left: 64%;
+    top: 94%;
+    height: 5%;
+    position: fixed;
+}
+
+#select{
+    left: 80%;
+    top: 10%;
+    width: 20%;
+    height: 90%;
+    position: fixed;
+    background-color: rgb(72, 72, 93);
+    text-align: center;
+    border-top: 3px solid;
+    border-left: 3px solid;
+}
+
+#select_clean{
+    left: 100%;
+    top: 10%;
+    width: 20%;
+    height: 90%;
+    position: fixed;
+    background-color: rgb(72, 72, 93);
+    text-align: center;
+    border-top: 3px solid;
+    border-left: 3px solid;
+}
+
+#plot_err{
+    color: red;
+}
+
+#clean_err{
+    color: red;
+}
+
+#dim{
+    text-align: right;
+}
+
+#plot{
+    left: 80%;
+    top: 0%;
+    width: 10%;
+    height: 10%;
+    position: fixed;
+    color:white;
+    background-color: rgb(72, 72, 93);
+    text-align: center;
+    border: 3px solid;
+    border-color: black;
+}
+
+#clean{
+    left: 90%;
+    top: 0%;
+    width: 10%;
+    height: 10%;
+    position: fixed;
+    color:white;
+    background-color: rgb(72, 72, 93);
+    text-align: center;
+    border: 3px solid;
+    border-color: black;
+}
