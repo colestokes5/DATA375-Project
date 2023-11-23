@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+	<head>
+                <script src="{% static 'code/code.js' %}"></script>
+                <link rel="stylesheet" 
+                        type="text/css"
+                        href="{% static 'css/style.css' %}">
+                <meta charset="UTF-8">
+                <title>DATA375-ColeStokes-Project</title>
+                <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.3.0.js"></script>
+                <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.3.0.min.js"></script>
+                <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.3.0.min.js"></script>
+                <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@holoviz/panel@1.3.1/dist/panel.min.js"></script>
+                <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css"/>
+                <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+                <py-config>
+                        packages = [
+                        "matplotlib",
+                        "pandas",
+                        "numpy",
+                        "https://cdn.holoviz.org/panel/1.3.1/dist/wheels/bokeh-3.3.0-py3-none-any.whl",
+                        "https://cdn.holoviz.org/panel/1.3.1/dist/wheels/panel-1.3.1-py3-none-any.whl"
+                        ]
+                        plugins = [
+                        "https://pyscript.net/latest/plugins/python/py_tutor.py"
+                        ]
+                </py-config>
+	</head>
+	<body>
+                <div id="file">
+                        <div id="fileSelect"></div>
+                        <div id="CDFPos">
+                                <button py-click="createDF()" onclick="hide()">Create Data Frame</button>
+                        </div>
+                        <div id="SDFPos">
+                                <button py-click="showDF()" onclick="hide()">Show Data Frame</button>
+                        </div>
+                </div>
+                <div id="text"></div>
+                <div id="disp2"></div>
+                <div id="disp"></div>
+                <div id="plot" onclick="hideClean()">
+                        <h2>Plot</h2>
+                </div>
+                <div id="clean" onclick="showClean()">
+                        <h2>Clean</h2>
+                </div>
+                <div id="select">
+                        <h3>Plot:</h3>
+                        <label for="plotSelect">Select a Plot Type:</label>
+                        <select id="plotSelect" name="plotSelect" onchange="dims()">
+                                <option value="bar">Bar Chart</option>
+                                <option value="box">Box Plot</option>
+                                <option value="hist">Histogram</option>
+                                <option value="plot">Line</option>
+                                <option value="pie">Pie</option>
+                                <option value="scatter">Scatter</option>
+                                <option value="scatter3">Scatter (3D)</option>
+                        </select>
+                        <div id="dim">
+                                <br>
+                                <label for="x">x:</label>
+                                <input id="x" type="text" /><br><br>
+                                <label for="y">y:</label>
+                                <input id="y" type="text" /><br><br>
+                                <label for="xlab">x Label:</label>
+                                <input id="xlab" type="text" /><br><br>
+                                <label for="ylab">y Label:</label>
+                                <input id="ylab" type="text" /><br><br>
+                                <label for="title">Title:</label>
+                                <input id="title" type="text" />
+                        </div>
+                        <br>
+                        <button py-click="createFig()" id="plotButton" onclick="show()">Plot!</button>
+                        <div id="plotErr"></div>
+                </div>
+                <div id="selectClean">
+                        <h3>Clean:</h3>
+                        <label for="cleanSelect">Operaptions:</label>
+                        <select id="cleanSelect" name="cleanSelect" onchange="cleanOperation()">
+                                <option value="removeCol">Remove Columns</option>
+                                <option value="removeRow">Remove Rows</option>
+                                <option value="removeNA">Remove Rows With NA Values</option>
+                                <option value="renameCol">Rename Column</option>
+                        </select>
+                        <div id="cleanDF">
+                                <br>
+                                <label for="remCol">Remove Colums (Seperate by ","):</label>
+                                <input id="remCol" type="text" /> 
+                        </div>
+                        <br>
+                        <button py-click="execute()" id="executeButton" onclick="hide()">Execute</button>
+                        <div id="cleanErr"></div>
+                </div>
+                <script type="py">
+                        import matplotlib.pyplot as plt
+                        import numpy as np
+                        import pandas as pd
+                        import panel as pn
+                        import io
+
+                        file_select = pn.widgets.FileInput(accept=".csv")
+                        pn.Row(file_select).servable(target='fileSelect');
+
+                        df_holder = pd.DataFrame()
+                        table = pn.widgets.DataFrame(df_holder, autosize_mode = "fit_viewport")
+                        pn.Row(table).servable(target='disp2');
+
+                        def createDF():
+                                global df
+                                df = pd.read_csv(io.BytesIO(file_select.value))
+                                table.value = df_holder
+                                table.value = df
+
+                        def showDF():
+                                table.value = df_holder
+                                table.value = df
+
+                        def createFig():
+                                dim = Element("plotErr")
+                                dim.element.innerHTML = ""
+                                try:
+                                        ps = Element("plotSelect")
+                                        disp = Element("disp")
+                                        val = ps.element.value
+                                        disp.element.innerHTML = ''
+                                        xl = Element("xlab")
+                                        xlab = xl.element.value
+                                        t = Element("title")
+                                        title = t.element.value
+                                        fig, ax = plt.subplots()
+                                        ax.set_xlabel(xlab)
+                                        ax.set_title(title)
+                                        x_val = Element("x")
+                                        x = x_val.element.value
+                                        if val == "box":
+                                                ax.boxplot(list(df[x]))
+                                        elif val == "hist":
+                                                ax.hist(list(df[x]))
+                                        elif val == "pie":
+                                                ax.pie(list(df[x]))
+                                        else: 
+                                                yl = Element("ylab")
+                                                ylab = yl.element.value
+                                                ax.set_ylabel(ylab)
+                                                y_val = Element("y")
+                                                y = y_val.element.value
+                                                if val == "bar":
+                                                        ax.bar(list(df[x]), list(df[y]))
+                                                elif val == "plot":
+                                                        df_temp = df.sort_values([x])
+                                                        ax.plot(list(df_temp[x]), list(df_temp[y]))
+                                                elif val == "scatter":
+                                                        ax.scatter(list(df[x]), list(df[y]))
+                                                else:
+                                                        fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+                                                        z_val = Element("z")
+                                                        z = z_val.element.value
+                                                        zl = Element("zlab")
+                                                        zlab = zl.element.value
+                                                        if val == "scatter3":
+                                                                ax.scatter(list(df[x]), list(df[y]), list(df[z]))
+                                                                ax.set_xlabel(xlab)
+                                                                ax.set_ylabel(ylab)
+                                                                ax.set_zlabel(zlab)
+                                                                ax.set_title(title)
+                                        display(fig, target="disp")
+                                except:
+                                        dim.element.innerHTML = "Sorry try using different columns."
+                        
+                        def execute():
+                                cs = Element("cleanSelect") 
+                                cs_val = cs.element.value
+                                ce = Element("cleanErr")
+                                ce.element.innerHTML = ""
+                                if cs_val == 'removeCol':
+                                        try:
+                                                cols = Element("remCol") 
+                                                cols_val = cols.element.value 
+                                                col_lst = cols_val.replace(' ', '').split(",")
+                                                df.drop(columns=col_lst, inplace=True)
+                                                table.value = df_holder
+                                                table.value = df
+                                        except:
+                                                ce.element.innerHTML = "Please choose valid column(s)."
+                                elif cs_val == 'removeRow':
+                                        try:
+                                                rows = Element("remRow") 
+                                                rows_val = rows.element.value 
+                                                row_lst = rows_val.replace(' ', '').split(",")
+                                                row_lst = [int(x) for x in row_lst]
+                                                df.drop(index=row_lst, inplace=True)
+                                                table.value = df_holder
+                                                table.value = df
+                                        except:
+                                                ce.element.innerHTML = "Please choose valid row(s)."
+                                elif cs_val == 'removeNA':
+                                        df.dropna(inplace=True)
+                                        table.value = df_holder
+                                        table.value = df
+                                elif cs_val == 'renameCol':
+                                        rename = Element("rename") 
+                                        rename_val = rename.element.value 
+                                        new_name = Element("newName") 
+                                        new_name_val = new_name.element.value 
+                                        df.rename(columns={rename_val: new_name_val}, inplace=True)
+                                        table.value = df_holder
+                                        table.value = df
+                </script>
+	</body>
+</html>
